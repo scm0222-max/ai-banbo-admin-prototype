@@ -54,9 +54,9 @@
               <div class="banbo-switch-control"><span id="companionStatusText">AI伴播已开启</span><button class="switch on" id="companionSwitch" aria-label="开启或关闭AI伴播"></button></div>
             </div>
             <div class="banbo-setting-divider"></div>
-            <div class="banbo-model-control"><div><label for="autoModelSelect">数字模特</label><span>仅自动触发所选模特的伴播视频，其他模特视频需手动选择播放</span></div><select id="autoModelSelect"><option value="">全部</option><option value="qingyu">乔青予</option><option value="ruoxia">林若夏</option><option value="qiaohu">巧虎</option></select></div>
+            <div class="banbo-model-control"><div><label for="autoModelSelect">数字模特</label><span>仅自动触发所选模特和无模特的伴播视频</span></div><select id="autoModelSelect"><option value="">全部</option><option value="qingyu">乔青予</option><option value="ruoxia">林若夏</option><option value="qiaohu">巧虎</option></select></div>
             <div class="banbo-setting-divider"></div>
-            <div class="banbo-model-control"><div><label for="productPlaybackMode">商品讲解播放方式</label><span id="productPlaybackHint">同一商品的视频轮流循环播放，直至结束商品讲解</span></div><select id="productPlaybackMode"><option value="loop">循环播放</option><option value="once">单次播放</option></select></div>
+            <div class="banbo-model-control"><div><label for="productPlaybackMode">商品讲解播放方式</label><span id="productPlaybackHint">同一商品的视频轮流循环播放</span></div><select id="productPlaybackMode"><option value="loop">循环播放</option><option value="once">单次播放</option></select></div>
           </section>
           <section class="banbo-card">
             <div class="banbo-card-head"><h3>当前播放</h3><span class="banbo-tag green" id="playingState">播放中</span></div>
@@ -298,7 +298,7 @@
   document.getElementById('productPlaybackMode').addEventListener('change', event => {
     productPlaybackMode = event.target.value;
     const loop = productPlaybackMode === 'loop';
-    document.getElementById('productPlaybackHint').textContent = loop ? '同一商品的视频轮流循环播放，直至结束商品讲解' : '点击讲解商品后，每条匹配视频仅播放一次';
+    document.getElementById('productPlaybackHint').textContent = loop ? '同一商品的视频轮流循环播放' : '每条匹配视频仅播放一次';
     showToast(loop ? '商品讲解：循环播放' : '商品讲解：单次播放');
   });
   document.getElementById('voiceBoardButton').addEventListener('click', () => setVoiceBoard(true));
