@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 270 270" role="img" aria-labelledby="title">
+  <title id="title">周晓彤头像</title>
+  <defs><clipPath id="circle"><circle cx="135" cy="135" r="135"/></clipPath></defs>
+  <g clip-path="url(#circle)">
+    <rect width="270" height="270" fill="#bfe7d6"/>
+    <path d="M94 264c7-42 20-67 41-74 26 7 42 32 49 74z" fill="#ffa59b"/>
+    <path d="M64 120c0-57 30-92 79-92 45 0 72 31 72 83 0 65-34 115-80 115-43 0-71-42-71-106z" fill="#ffa59b"/>
+    <path d="M91 62c31-31 84-29 115 5 9 15 13 31 12 49-27-4-48-20-61-46-15 19-38 34-70 44z" fill="#985536"/>
+    <circle cx="207" cy="127" r="22" fill="#f28b82"/><path d="M199 128c7-7 13-7 18 0" fill="none" stroke="#d9574c" stroke-width="5" stroke-linecap="round"/>
+    <path d="M72 109c8-5 16-6 23-1M125 108c8-5 16-4 23 1" fill="none" stroke="#61362a" stroke-width="5" stroke-linecap="round"/>
+    <ellipse cx="84" cy="128" rx="4" ry="6" fill="#41251f"/><ellipse cx="137" cy="127" rx="4" ry="6" fill="#41251f"/>
+    <path d="M111 131l-5 19c-2 6 2 10 9 10" fill="none" stroke="#d94f43" stroke-width="5" stroke-linecap="round"/>
+    <path d="M84 174c18 18 40 17 61-3" fill="none" stroke="#d94842" stroke-width="6" stroke-linecap="round"/>
+    <path d="M65 65c20-43 54-64 101-61 41 3 66 26 74 69 5 24 1 43-10 58-13-47-44-73-93-77-29-2-53 2-72 11z" fill="#2a806e"/>
+    <path d="M31 93c37-34 83-48 138-41 15 2 25 8 30 17-28 28-69 39-124 33-27-3-42-6-44-9z" fill="#176b5b"/>
+  </g>
+</svg>

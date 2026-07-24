@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 270 270" role="img" aria-labelledby="title">
+  <title id="title">李梦琪头像</title>
+  <defs><clipPath id="circle"><circle cx="135" cy="135" r="135"/></clipPath></defs>
+  <g clip-path="url(#circle)">
+    <rect width="270" height="270" fill="#ffddb0"/>
+    <path d="M91 263c7-42 21-66 44-73 26 8 42 32 48 73z" fill="#ffa49b"/>
+    <circle cx="184" cy="52" r="41" fill="#34200e"/>
+    <path d="M64 118c0-54 29-91 79-91 44 0 72 31 72 82 0 66-35 117-81 117-42 0-70-43-70-108z" fill="#ffa49b"/>
+    <path d="M54 106c2-54 30-88 82-88 42 0 69 20 84 58-28-12-44-31-48-56-10 24-37 39-81 45-8 18-14 32-18 42z" fill="#34200e"/>
+    <circle cx="207" cy="125" r="22" fill="#f28c82"/><path d="M199 126c7-7 13-7 18 0" fill="none" stroke="#d9574c" stroke-width="5" stroke-linecap="round"/>
+    <path d="M81 112c7-6 14-7 22-2M132 105c8-4 16-3 23 2" fill="none" stroke="#4c241d" stroke-width="5" stroke-linecap="round"/>
+    <ellipse cx="94" cy="130" rx="4" ry="6" fill="#3b221d"/><ellipse cx="144" cy="124" rx="4" ry="6" fill="#3b221d"/>
+    <path d="M119 130l-6 20c-1 6 3 9 10 9" fill="none" stroke="#d94f43" stroke-width="5" stroke-linecap="round"/>
+    <path d="M92 173c21 10 39 7 55-8-4 20-17 31-34 30-10-1-17-8-21-22z" fill="#d94842"/>
+    <circle cx="163" cy="151" r="3" fill="#e87876"/><circle cx="175" cy="148" r="3" fill="#e87876"/><circle cx="169" cy="159" r="3" fill="#e87876"/>
+  </g>
+</svg>

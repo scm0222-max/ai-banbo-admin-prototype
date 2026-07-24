@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 270 270" role="img" aria-labelledby="title">
+  <title id="title">陈航头像</title>
+  <defs><clipPath id="circle"><circle cx="135" cy="135" r="135"/></clipPath></defs>
+  <g clip-path="url(#circle)">
+    <rect width="270" height="270" fill="#d9d1ff"/>
+    <path d="M95 264c6-41 20-66 42-74 25 7 41 32 48 74z" fill="#ffa59b"/>
+    <path d="M63 119c0-55 30-91 80-91 44 0 71 32 71 83 0 65-34 115-80 115-43 0-71-42-71-107z" fill="#ffa59b"/>
+    <path d="M56 90c3-39 27-62 72-69 49-8 81 10 96 53-25 10-48 14-69 12-27-2-47-11-60-26-7 19-20 29-39 30z" fill="#f5d36e"/>
+    <circle cx="207" cy="127" r="22" fill="#f28b82"/><path d="M199 128c7-7 13-7 18 0" fill="none" stroke="#d9574c" stroke-width="5" stroke-linecap="round"/>
+    <path d="M74 108c8-5 16-5 23 0M128 104c8-4 16-3 23 2" fill="none" stroke="#55291f" stroke-width="5" stroke-linecap="round"/>
+    <ellipse cx="86" cy="129" rx="4" ry="6" fill="#3c211c"/><ellipse cx="140" cy="125" rx="4" ry="6" fill="#3c211c"/>
+    <path d="M112 130l-5 19c-2 7 2 10 10 10" fill="none" stroke="#d94f43" stroke-width="5" stroke-linecap="round"/>
+    <path d="M86 174c21 10 40 7 57-8-5 20-18 31-36 29-10-1-17-8-21-21z" fill="#d94842"/>
+    <path d="M61 82c-1-38 26-60 79-67 54-7 84 14 89 62-23 4-44 4-63 0-23-5-45-12-65-22-11 18-24 27-40 27z" fill="#82486f"/>
+  </g>
+</svg>
