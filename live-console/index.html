@@ -1,0 +1,3585 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI伴播直播中控台插件 Demo</title>
+  <link rel="icon" href="data:," />
+  <link rel="stylesheet" href="ai-banbo-plugin.css?v=20260721-1" />
+  <style>
+    :root {
+      --demo-scale: .67;
+      --blue: #1769ff;
+      --blue-weak: #edf4ff;
+      --pink: #9255DE;
+      --pink-weak: #F3ECFF;
+      --text: #171923;
+      --muted: #7b8190;
+      --line: #e8ebf1;
+      --bg: #f5f7fb;
+      --card: #fff;
+      --green: #15b976;
+      --orange: #ff8a1f;
+      --red: #ef3f55;
+      --shadow: 0 12px 32px rgba(20, 34, 66, .10);
+    }
+
+    * { box-sizing: border-box; }
+    html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      margin: 0;
+      width: calc(100vw / var(--demo-scale));
+      height: calc(100vh / var(--demo-scale));
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
+      letter-spacing: 0;
+      overflow: hidden;
+      zoom: var(--demo-scale);
+    }
+
+    button, input, select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+      background: transparent;
+      color: inherit;
+    }
+
+    .app {
+      width: calc(100vw / var(--demo-scale));
+      height: calc(100vh / var(--demo-scale));
+      display: grid;
+      grid-template-rows: 72px 1fr;
+      background: #f7f9fd;
+    }
+
+    .topbar {
+      height: 72px;
+      background: #fff;
+      border-bottom: 1px solid var(--line);
+      display: grid;
+      grid-template-columns: 250px 1fr auto;
+      align-items: center;
+      padding: 0 28px;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 20px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .douyin {
+      width: 28px;
+      height: 28px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .topnav {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      font-size: 15px;
+      font-weight: 500;
+      color: #2d3444;
+    }
+
+    .topnav span {
+      position: relative;
+      white-space: nowrap;
+    }
+
+    .topnav .active {
+      color: var(--blue);
+    }
+
+    .topnav .active::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -24px;
+      width: 28px;
+      height: 3px;
+      border-radius: 999px;
+      background: var(--blue);
+      transform: translateX(-50%);
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      font-size: 14px;
+      color: #303647;
+    }
+
+    .top-actions-img {
+      width: 240px;
+      height: auto;
+      display: block;
+    }
+
+    .icon-wrap {
+      position: relative;
+      width: 28px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      font-size: 20px;
+    }
+
+    .badge {
+      position: absolute;
+      right: -6px;
+      top: -8px;
+      min-width: 18px;
+      height: 18px;
+      padding: 0 5px;
+      border-radius: 999px;
+      background: #f43f5e;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .account {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 210px;
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: #d61010;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 12px;
+    }
+
+    .account-name {
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-weight: 650;
+    }
+
+    .main {
+      min-height: 0;
+      display: grid;
+      grid-template-columns: 248px 450px minmax(1100px, 1fr) 46px;
+      gap: 24px;
+      padding: 18px 20px 20px 28px;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      background: #f1f5fb;
+      border-right: 1px solid #e3e8f1;
+      margin: -18px 0 -20px -28px;
+      padding: 28px 16px 20px 28px;
+      overflow: hidden;
+      scrollbar-width: none;
+    }
+
+    .sidebar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .side-group {
+      margin-bottom: 26px;
+    }
+
+    .side-title {
+      color: var(--blue);
+      font-weight: 400;
+      margin: 6px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .side-item {
+      height: 43px;
+      display: flex;
+      align-items: center;
+      padding-left: 36px;
+      color: #5b6272;
+      border-radius: 8px;
+      font-weight: 400;
+      margin: 3px 0;
+    }
+
+    .side-item.active {
+      color: var(--blue);
+      background: #eaf2ff;
+      border-left: 3px solid var(--blue);
+      padding-left: 33px;
+    }
+
+    .interaction {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) 178px;
+      gap: 16px;
+      min-height: 0;
+    }
+
+    .panel {
+      background: #fff;
+      border: 1px solid #edf0f5;
+      border-radius: 10px;
+      box-shadow: 0 4px 18px rgba(30, 47, 80, .04);
+    }
+
+    .chat-card {
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      min-height: 0;
+      padding: 28px 28px 26px;
+    }
+
+    .section-title {
+      font-size: 24px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 0 0 18px;
+    }
+
+    .section-title > span {
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .title-tools {
+      display: flex;
+      gap: 10px;
+    }
+
+    .title-tools-img {
+      width: 186px;
+      height: 40px;
+      object-fit: contain;
+      display: block;
+    }
+
+    .collapse-arrow {
+      width: 24px;
+      height: 17px;
+      object-fit: contain;
+      margin-left: 8px;
+      vertical-align: 0;
+    }
+
+    .small-tool {
+      height: 34px;
+      min-width: 48px;
+      border-radius: 6px;
+      background: #f4f6fa;
+      color: #4f5869;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      font-size: 13px;
+      font-weight: 650;
+      padding: 0 10px;
+    }
+
+    .tabs-mini {
+      display: flex;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .tabs-mini button {
+      height: 38px;
+      border: 1px solid #dce2ec;
+      border-right: 0;
+      padding: 0 18px;
+      color: #3d4350;
+      background: #fff;
+      font-weight: 650;
+    }
+
+    .tabs-mini button:first-child { border-radius: 6px 0 0 6px; }
+    .tabs-mini button:last-child {
+      border-radius: 0 6px 6px 0;
+      border-right: 1px solid #dce2ec;
+    }
+
+    .tabs-mini .selected {
+      color: var(--blue);
+      border-color: var(--blue);
+      background: #fff;
+      position: relative;
+      z-index: 1;
+    }
+
+    .chat-list {
+      min-height: 0;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .chat-line {
+      margin: 9px 0;
+      line-height: 1.55;
+      font-size: 15px;
+      color: #2c3446;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      height: 22px;
+      padding: 0 8px;
+      border-radius: 999px;
+      margin-right: 6px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      vertical-align: 1px;
+    }
+
+    .tag.green { background: #1ec47d; }
+    .tag.blue { background: #7087c7; }
+    .tag.orange { background: #f0a845; }
+
+    .comment-box {
+      height: 74px;
+      border: 1px solid #e2e6ef;
+      border-radius: 7px;
+      color: #b8bdc9;
+      padding: 12px 14px;
+      font-size: 14px;
+      display: grid;
+      grid-template-rows: 1fr auto;
+    }
+
+    .comment-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #c2c7d2;
+      font-size: 13px;
+    }
+
+    .tools-card {
+      padding: 24px 28px;
+      min-height: 0;
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .tool-tile {
+      background: #f7f9fc;
+      border-radius: 8px;
+      padding: 12px;
+      min-height: 58px;
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tool-icon {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: #e8f0ff;
+      color: var(--blue);
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+    }
+
+    .geo-icon {
+      width: 16px;
+      height: 16px;
+      display: inline-block;
+      background: transparent;
+      border: 2px solid currentColor;
+    }
+
+    .geo-icon.square {
+      border-radius: 4px;
+    }
+
+    .geo-icon.circle {
+      border-radius: 50%;
+    }
+
+    .geo-icon.triangle {
+      width: 0;
+      height: 0;
+      background: transparent;
+      border: 0;
+      position: relative;
+    }
+
+    .geo-icon.triangle::before {
+      content: "";
+      position: absolute;
+      inset: -8px;
+      width: 14px;
+      height: 14px;
+      border-left: 2px solid currentColor;
+      border-bottom: 2px solid currentColor;
+      transform: rotate(-45deg) skew(12deg, 12deg);
+    }
+
+    .geo-icon.diamond {
+      transform: rotate(45deg);
+      border-radius: 3px;
+    }
+
+    .tool-name {
+      font-weight: 760;
+      margin-bottom: 3px;
+    }
+
+    .tool-desc {
+      color: #9aa2b2;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .content {
+      display: grid;
+      grid-template-rows: 212px minmax(0, 1fr);
+      gap: 16px;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .metrics {
+      padding: 20px 28px;
+      overflow: hidden;
+    }
+
+    .control-head {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .live-chip {
+      background: #ff3d61;
+      color: #fff;
+      height: 24px;
+      border-radius: 3px;
+      padding: 0 8px;
+      display: inline-flex;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .plan-link {
+      color: var(--blue);
+      font-size: 14px;
+      font-weight: 650;
+    }
+
+    .refresh-tabs {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #747c8d;
+      font-size: 13px;
+    }
+
+    .refresh-tabs .pill {
+      height: 30px;
+      padding: 0 13px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      color: #596273;
+      background: #f4f6fa;
+      font-weight: 650;
+    }
+
+    .refresh-tabs .pill.active {
+      color: var(--blue);
+      background: #ecf4ff;
+    }
+
+    .outline-pill {
+      height: 32px;
+      padding: 0 14px;
+      border: 1px solid #9ab9ff;
+      color: var(--blue);
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff;
+      font-weight: 650;
+    }
+
+    .metric-row {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(120px, 1fr));
+      gap: 28px;
+    }
+
+    .metric-card {
+      min-width: 0;
+    }
+
+    .metric-label {
+      color: #5e6676;
+      font-size: 13px;
+      font-weight: 650;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-bottom: 7px;
+    }
+
+    .metric-value {
+      font-size: 24px;
+      font-weight: 850;
+      margin-bottom: 7px;
+    }
+
+    .metric-foot {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #8d95a4;
+      font-size: 13px;
+      min-height: 32px;
+    }
+
+    .trend {
+      width: 86px;
+      height: 30px;
+      flex: 0 0 auto;
+    }
+
+    .products {
+      padding: 24px 28px 0;
+      overflow: hidden;
+      display: grid;
+      grid-template-rows: auto auto auto minmax(0, 1fr);
+      min-height: 0;
+    }
+
+    .product-top {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      margin-bottom: 18px;
+    }
+
+    .product-top h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .product-top .sub {
+      color: #6d7483;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .product-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: #2d3444;
+      font-size: 14px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .add-product {
+      height: 38px;
+      border-radius: 5px;
+      color: #fff;
+      background: var(--blue);
+      padding: 0 18px;
+      font-size: 16px;
+      font-weight: 750;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: auto 350px 150px 1fr auto;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 12px;
+      color: #2d3444;
+    }
+
+    .checkbox {
+      width: 22px;
+      height: 22px;
+      border: 1px solid #d8dde8;
+      border-radius: 3px;
+      display: inline-block;
+      vertical-align: -5px;
+      margin-right: 10px;
+      background: #fff;
+    }
+
+    .search {
+      height: 38px;
+      border: 1px solid #d8dde8;
+      border-radius: 5px;
+      display: grid;
+      grid-template-columns: 1fr 48px;
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .search input {
+      border: 0;
+      padding: 0 14px;
+      outline: 0;
+      color: #7f8795;
+    }
+
+    .search button {
+      border-left: 1px solid #d8dde8;
+      color: #7d8493;
+      font-size: 19px;
+    }
+
+    .filter-btn {
+      height: 38px;
+      border: 1px solid #d8dde8;
+      border-radius: 5px;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-weight: 650;
+    }
+
+    .diagnosis {
+      margin-left: auto;
+      color: #a7adba;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .label-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #727b8b;
+      font-size: 14px;
+      margin-bottom: 12px;
+      min-width: 0;
+    }
+
+    .soft-label {
+      height: 28px;
+      padding: 0 13px;
+      border-radius: 6px;
+      background: #f0f2f6;
+      color: #b8bfca;
+      display: inline-flex;
+      align-items: center;
+      font-weight: 700;
+    }
+
+    .product-list {
+      overflow: auto;
+      padding-right: 12px;
+      padding-bottom: 18px;
+    }
+
+    .product-row {
+      position: relative;
+      display: grid;
+      grid-template-columns: 48px 140px minmax(420px, 1fr) 116px 130px 150px 136px;
+      gap: 18px;
+      align-items: center;
+      min-height: 152px;
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid #edf1f7;
+      box-shadow: 0 4px 14px rgba(22, 34, 62, .035);
+      padding: 18px 22px;
+      margin-bottom: 12px;
+    }
+
+    .product-row.active {
+      border-color: #8cb7ff;
+      background: #fff;
+    }
+
+    .product-row.highlight::after {
+      content: none;
+    }
+
+    .index-cell {
+      font-size: 22px;
+      color: #1f2530;
+      text-align: center;
+    }
+
+    .product-info {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .thumb {
+      width: 102px;
+      height: 102px;
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.10), rgba(255,255,255,0)),
+        linear-gradient(140deg, #c9d7e8, #8ba0b9);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .thumb.has-image::before,
+    .thumb.has-image::after {
+      content: none;
+    }
+
+    .thumb::before {
+      content: "";
+      position: absolute;
+      left: 38px;
+      top: 18px;
+      width: 28px;
+      height: 34px;
+      border-radius: 14px 14px 9px 9px;
+      background: #25344c;
+    }
+
+    .thumb::after {
+      content: "";
+      position: absolute;
+      left: 28px;
+      top: 48px;
+      width: 48px;
+      height: 66px;
+      border-radius: 8px 8px 12px 12px;
+      background: var(--jacket, #3768a5);
+    }
+
+    .thumb .status {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      color: #fff;
+      background: #ff3653;
+      font-size: 15px;
+      font-weight: 800;
+      z-index: 1;
+    }
+
+    .p-title {
+      font-size: 18px;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+      margin-bottom: 7px;
+    }
+
+    .product-meta {
+      min-width: 0;
+    }
+
+    .ship {
+      display: inline-flex;
+      height: 24px;
+      padding: 0 6px;
+      align-items: center;
+      border-radius: 4px;
+      border: 1px solid #1f70ff;
+      color: #1769ff;
+      font-weight: 700;
+      margin-bottom: 9px;
+    }
+
+    .subtitle {
+      color: #4d5565;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 15px;
+    }
+
+    .id-chip {
+      display: inline-flex;
+      height: 24px;
+      width: 26px;
+      justify-content: center;
+      align-items: center;
+      background: #f0f2f7;
+      border-radius: 4px;
+      color: #8b93a2;
+      font-weight: 800;
+      margin-left: 4px;
+    }
+
+    .price {
+      font-size: 22px;
+      font-weight: 850;
+      margin-bottom: 7px;
+    }
+
+    .subvalue {
+      color: #8b93a3;
+      font-size: 15px;
+      font-weight: 650;
+    }
+
+    .hot-data {
+      display: none;
+      position: absolute;
+      right: 16px;
+      top: 12px;
+      color: var(--pink);
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    .row-buttons {
+      grid-column: 3 / -1;
+      justify-self: end;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      max-width: 100%;
+      padding-right: 0;
+    }
+
+    .row-btn {
+      height: 38px;
+      padding: 0 15px;
+      border-radius: 5px;
+      border: 1px solid #dbe1eb;
+      background: #fff;
+      color: #252b37;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .row-btn.pink {
+      background: #ede9fe;
+      border-color: #ede9fe;
+      color: #7c3aed;
+      min-width: 116px;
+    }
+
+    .row-buttons .banbo-product-video-entry {
+      height: 38px;
+      min-height: 38px;
+      margin-top: 0;
+      padding: 0 15px;
+      border-radius: 5px;
+      font-size: inherit;
+      line-height: normal;
+      font-weight: 700;
+    }
+
+    .start-explain {
+      display: none;
+    }
+
+    .start-explain.show {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .sound-bars {
+      width: 18px;
+      height: 18px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+
+    .sound-bars i {
+      display: block;
+      width: 2px;
+      border-radius: 4px;
+      background: currentColor;
+    }
+
+    .sound-bars i:nth-child(1) { height: 10px; }
+    .sound-bars i:nth-child(2) { height: 15px; }
+    .sound-bars i:nth-child(3) { height: 8px; }
+    .sound-bars i:nth-child(4) { height: 13px; }
+
+    .start-explain.is-speaking {
+      background: var(--pink);
+      border-color: var(--pink);
+      color: #fff;
+    }
+
+    .right-float-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      width: 46px;
+      min-width: 46px;
+    }
+
+    .side-rail {
+      width: 46px;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .assistant-float {
+      position: static;
+      width: 46px;
+      height: 112px;
+      border-radius: 23px;
+      background: linear-gradient(180deg, #a78bfa, #7c3aed);
+      color: #fff;
+      box-shadow: 0 12px 30px rgba(124, 58, 237, .30);
+      z-index: 20;
+      display: grid;
+      grid-template-rows: 38px 1fr;
+      justify-items: center;
+      align-items: center;
+      padding: 6px 0 8px;
+    }
+
+    .assistant-float .orb {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: rgba(255,255,255,.96);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .assistant-float .orb img {
+      width: 34px;
+      height: 34px;
+      display: block;
+      object-fit: contain;
+    }
+
+    .assistant-float .vertical {
+      writing-mode: horizontal-tb;
+      letter-spacing: 0;
+      font-weight: 700;
+      font-size: 13px;
+      line-height: 1.05;
+      text-align: center;
+    }
+
+    .phone-preview {
+      position: fixed;
+      right: 84px;
+      bottom: 28px;
+      width: 186px;
+      height: 330px;
+      border-radius: 24px;
+      border: 8px solid #1d2532;
+      background: linear-gradient(180deg, #182234, #0d1320);
+      box-shadow: 0 18px 46px rgba(20, 35, 70, .22);
+      z-index: 15;
+      overflow: hidden;
+      display: none;
+    }
+
+    .phone-preview.visible {
+      display: block;
+    }
+
+    .phone-live {
+      height: 100%;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0)),
+        linear-gradient(135deg, #4d607b, #162337 55%, #0c111e);
+      position: relative;
+      color: #fff;
+      padding: 12px;
+    }
+
+    .phone-host {
+      position: absolute;
+      left: 58px;
+      top: 54px;
+      width: 68px;
+      height: 160px;
+      border-radius: 34px 34px 18px 18px;
+      background: #222f46;
+    }
+
+    .phone-host::before {
+      content: "";
+      position: absolute;
+      top: -26px;
+      left: 18px;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #e7c49b;
+    }
+
+    .phone-top {
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      opacity: .9;
+    }
+
+    .phone-bubbles {
+      position: absolute;
+      left: 10px;
+      bottom: 78px;
+      right: 10px;
+      display: grid;
+      gap: 6px;
+      font-size: 11px;
+    }
+
+    .phone-bubbles span {
+      width: max-content;
+      max-width: 150px;
+      padding: 5px 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.16);
+      backdrop-filter: blur(8px);
+    }
+
+    .phone-link {
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: 16px;
+      min-height: 54px;
+      background: #fff;
+      color: #1a202c;
+      border-radius: 12px;
+      display: grid;
+      grid-template-columns: 44px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 7px;
+      transform: translateY(82px);
+      opacity: 0;
+      transition: .32s ease;
+    }
+
+    .phone-link.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .phone-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: #dde6f2 url("assets/product-1.png") center / cover no-repeat;
+    }
+
+    .phone-link-title {
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.25;
+      max-height: 28px;
+      overflow: hidden;
+    }
+
+    .phone-link-price {
+      color: #f33055;
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .buy-btn {
+      height: 28px;
+      border-radius: 999px;
+      background: #ff2f55;
+      color: #fff;
+      padding: 0 9px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .assistant-board {
+      position: fixed;
+      right: 0;
+      top: 0;
+      width: calc(465px / var(--demo-scale));
+      height: calc(100vh / var(--demo-scale));
+      min-height: 0;
+      border: 0;
+      border-left: 2px solid var(--pink);
+      border-radius: 0;
+      background: #fff;
+      box-shadow: -18px 0 60px rgba(49, 16, 49, .18);
+      z-index: 50;
+      overflow: hidden;
+      transform: translateX(105%);
+      transition: transform .28s ease;
+      display: grid;
+      grid-template-rows: 72px 1fr;
+    }
+
+    .assistant-board.open {
+      transform: translateX(0);
+    }
+
+    .board-header {
+      background:
+        radial-gradient(circle at 84% 0, rgba(255,255,255,.78), rgba(255,255,255,0) 44%),
+        linear-gradient(100deg, #efe5ff, #f8f4ff 46%, #eadcff);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 0 18px;
+    }
+
+    .plugin-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 21px;
+      font-weight: 850;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .plugin-mark {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #9255DE, #B783F2);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-weight: 900;
+      font-size: 20px;
+    }
+
+    .store-name {
+      min-width: 0;
+      color: #7b7484;
+      font-size: 18px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      color: #5b5160;
+      font-weight: 650;
+      min-width: 0;
+    }
+
+    .version {
+      height: 32px;
+      border-radius: 999px;
+      background: #efe5ff;
+      color: var(--pink);
+      padding: 0 10px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    .version-update {
+      color: var(--orange);
+    }
+
+    .user-chip {
+      color: var(--pink);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .header-btn {
+      height: 32px;
+      border-radius: 4px;
+      background: #eadcff;
+      padding: 0 9px;
+      font-weight: 700;
+      color: #4d3d4d;
+      white-space: nowrap;
+    }
+
+    .board-body {
+      display: grid;
+      grid-template-rows: 42px 1fr;
+      min-height: 0;
+      background: #fff;
+    }
+
+    .board-tabs {
+      display: flex;
+      align-items: end;
+      gap: 1px;
+      padding: 0 12px;
+      background: #f8f4ff;
+      border-bottom: 1px solid #e4d7f7;
+      overflow: hidden;
+    }
+
+    .board-tab {
+      height: 38px;
+      padding: 0 10px;
+      min-width: 0;
+      flex: 1 1 0;
+      border-radius: 6px 6px 0 0;
+      background: #efe6ff;
+      color: #222733;
+      font-size: 14px;
+      font-weight: 760;
+      white-space: nowrap;
+    }
+
+    .board-tab.active {
+      color: var(--pink);
+      background: #fff;
+      box-shadow: 0 -3px 0 var(--pink) inset;
+    }
+
+    .tab-content {
+      display: none;
+      overflow: auto;
+      padding: 22px 26px 26px;
+      background: #fff;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .board-section-title {
+      margin: 0 0 22px;
+      font-size: 24px;
+      font-weight: 850;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .config-card {
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid #f0edf1;
+      box-shadow: 0 8px 22px rgba(27, 38, 66, .06);
+      padding: 24px;
+      margin-bottom: 18px;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 12px 0;
+      flex-wrap: wrap;
+      color: #252b37;
+      font-size: 18px;
+      font-weight: 650;
+    }
+
+    .setting-row.compact {
+      gap: 10px;
+      font-size: 16px;
+      font-weight: 400;
+    }
+
+    .setting-row.compact > span:first-child {
+      font-size: 18px;
+      font-weight: 650;
+    }
+
+    .setting-row.compact .freq-label,
+    .setting-row.compact .unit-label {
+      font-size: 16px;
+      font-weight: 400;
+      color: #252b37;
+    }
+
+    .muted {
+      color: #a2a8b4;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .muted .pink-link {
+      font-size: 15px;
+      vertical-align: baseline;
+    }
+
+    .switch {
+      width: 54px;
+      height: 30px;
+      border-radius: 999px;
+      background: #d5d7de;
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .switch::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 5px rgba(0,0,0,.18);
+      transition: left .2s ease;
+    }
+
+    .switch.on {
+      background: var(--pink);
+    }
+
+    .switch.on::after {
+      left: 27px;
+    }
+
+    .number-input {
+      width: 86px;
+      height: 44px;
+      border: 1px solid #dce1ea;
+      border-radius: 6px;
+      padding: 0 16px;
+      font-size: 18px;
+      outline: 0;
+      background: #fff;
+    }
+
+    .number-input:disabled {
+      color: #7c8492;
+      background: #f4f5f8;
+      cursor: not-allowed;
+    }
+
+    .pink-link {
+      color: var(--pink);
+      font-weight: 800;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+
+    .status-card {
+      background: #f8f9fc;
+      border-radius: 12px;
+      padding: 16px;
+      border: 1px solid #eef1f6;
+    }
+
+    .status-label {
+      color: #7a8292;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .status-value {
+      font-size: 24px;
+      font-weight: 850;
+    }
+
+    .alert-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .strategy-panel {
+      display: grid;
+      gap: 18px;
+    }
+
+    .external-board-bar {
+      min-height: 42px;
+      border: 1px solid #eadff8;
+      border-radius: 10px;
+      background: #fbf8ff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 8px 12px;
+    }
+
+    .external-board-label {
+      color: #656d7d;
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .external-board-links {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .external-board-link {
+      height: 30px;
+      border-radius: 7px;
+      border: 1px solid rgba(146, 85, 222, .32);
+      background: #fff;
+      color: var(--pink);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 10px;
+      font-size: 14px;
+      font-weight: 850;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .external-board-icon {
+      font-size: 14px;
+      line-height: 1;
+    }
+
+    .strategy-categories {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 14px;
+      padding: 4px;
+      border-radius: 10px;
+      background: #f6f7fb;
+      border: 1px solid #eceff5;
+    }
+
+    .strategy-category {
+      height: 38px;
+      border-radius: 7px;
+      color: #667085;
+      font-weight: 800;
+      background: transparent;
+    }
+
+    .strategy-category.active {
+      color: var(--pink);
+      background: #fff;
+      box-shadow: 0 2px 8px rgba(33, 40, 55, .08);
+    }
+
+    .strategy-fields {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 0;
+    }
+
+    .metric-chip {
+      height: 30px;
+      padding: 0 10px;
+      gap: 6px;
+      border-radius: 999px;
+      border: 1px solid #e4e8f0;
+      background: #fff;
+      color: #667085;
+      font-weight: 700;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .metric-chip.active {
+      color: var(--pink);
+      border-color: #c7a5ef;
+      background: var(--pink-weak);
+    }
+
+    .metric-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      flex: 0 0 auto;
+    }
+
+    .strategy-chart {
+      height: 250px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #252d44, #343a56);
+      position: relative;
+      overflow: hidden;
+      padding: 18px;
+      color: #aeb8d0;
+    }
+
+    .chart-title {
+      position: absolute;
+      left: 18px;
+      top: 14px;
+      font-size: 13px;
+      font-weight: 800;
+      color: #aeb8d0;
+      z-index: 1;
+    }
+
+    .chart-title.right {
+      left: auto;
+      right: 18px;
+    }
+
+    .strategy-chart svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .chart-controls {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .alert-card {
+      border: 1px solid #eef0f5;
+      border-left: 5px solid var(--orange);
+      border-radius: 12px;
+      padding: 16px 18px;
+      background: #fff;
+    }
+
+    .alert-card.high {
+      border-left-color: var(--red);
+      background: #fffafa;
+    }
+
+    .alert-card.blue {
+      border-left-color: var(--blue);
+    }
+
+    .alert-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-weight: 850;
+      font-size: 17px;
+    }
+
+    .level {
+      height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      background: #fff0e3;
+      color: #dd6b00;
+      display: inline-flex;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .level.high {
+      background: #ffe7ea;
+      color: #e11d48;
+    }
+
+    .alert-text {
+      color: #5d6574;
+      line-height: 1.58;
+      margin-bottom: 12px;
+    }
+
+    .strategy-notices {
+      display: grid;
+      gap: 10px;
+    }
+
+    .strategy-notice {
+      border: 1px solid #eef0f5;
+      border-radius: 12px;
+      background: #fff;
+      padding: 14px 16px;
+    }
+
+    .notice-head {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .notice-time {
+      color: #8b93a3;
+      font-size: 13px;
+      font-weight: 800;
+      justify-self: end;
+    }
+
+    .notice-title {
+      font-weight: 850;
+      color: #202631;
+    }
+
+    .notice-tag {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      flex: 0 0 auto;
+      font-size: 0;
+      line-height: 0;
+      color: transparent;
+    }
+
+    .notice-tag.red { background: var(--red); }
+    .notice-tag.orange { background: var(--orange); }
+    .notice-tag.blue { background: var(--orange); }
+    .notice-tag.green { background: var(--green); }
+
+    .notice-body {
+      color: #5d6574;
+      line-height: 1.58;
+      font-size: 14px;
+      white-space: normal;
+    }
+
+    .strategy-popup-stack {
+      position: fixed;
+      right: calc(16px / var(--demo-scale));
+      top: calc(16px / var(--demo-scale));
+      width: calc(240px / var(--demo-scale));
+      max-height: calc(100vh / var(--demo-scale) - 32px);
+      display: grid;
+      gap: 12px;
+      overflow-y: auto;
+      padding: 0 10px 10px 0;
+      z-index: 44;
+      pointer-events: none;
+      opacity: 1;
+      transform: translateX(0);
+      transition: opacity .22s ease, transform .22s ease;
+    }
+
+    .strategy-popup-stack.is-hidden {
+      opacity: 0;
+      transform: translateX(18px);
+      pointer-events: none;
+    }
+
+    .strategy-popup-stack::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .strategy-popup-stack::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: rgba(139, 147, 163, .38);
+    }
+
+    .strategy-popup {
+      position: relative;
+      border: 1px solid #eadff8;
+      border-radius: 12px;
+      background: #fbf8ff;
+      box-shadow: 0 14px 34px rgba(22, 29, 49, .16);
+      padding: 16px 42px 16px 16px;
+      pointer-events: auto;
+    }
+
+    .strategy-popup .notice-head {
+      grid-template-columns: auto 1fr auto;
+      margin-bottom: 8px;
+    }
+
+    .strategy-popup .notice-title {
+      font-size: 16px;
+      line-height: 1.35;
+    }
+
+    .strategy-popup .notice-time {
+      font-size: 14px;
+    }
+
+    .strategy-popup-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+      box-shadow: 0 0 0 3px #fff;
+    }
+
+    .strategy-popup-dot.red { background: var(--red); }
+    .strategy-popup-dot.orange { background: var(--orange); }
+    .strategy-popup-dot.blue { background: var(--orange); }
+    .strategy-popup-dot.green { background: var(--green); }
+
+    .strategy-popup .notice-body {
+      font-size: 15px;
+      line-height: 1.62;
+      color: #50586a;
+    }
+
+    .strategy-popup-close {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      color: #747b8d;
+      display: grid;
+      place-items: center;
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    .strategy-popup-close:hover {
+      background: #f4f1fb;
+      color: var(--pink);
+    }
+
+    .voice-parser-window {
+      position: fixed;
+      right: calc(16px / var(--demo-scale));
+      top: calc(16px / var(--demo-scale));
+      width: calc(240px / var(--demo-scale));
+      height: calc(430px / var(--demo-scale));
+      min-width: calc(240px / var(--demo-scale));
+      min-height: calc(260px / var(--demo-scale));
+      max-width: calc(720px / var(--demo-scale));
+      max-height: calc(90vh / var(--demo-scale));
+      border: 1px solid rgba(255, 255, 255, .16);
+      border-radius: 12px;
+      background: rgba(22, 24, 31, .68);
+      color: #edf0f7;
+      box-shadow: 0 22px 54px rgba(0, 0, 0, .26);
+      backdrop-filter: blur(12px);
+      overflow: auto;
+      resize: both;
+      z-index: 70;
+      display: none;
+    }
+
+    .voice-parser-window.open {
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .voice-parser-window.collapsed {
+      height: auto !important;
+      min-height: 0;
+      resize: none;
+      overflow: hidden;
+    }
+
+    .voice-parser-window.collapsed .voice-parser-body {
+      display: none;
+    }
+
+    .voice-parser-head {
+      min-height: 44px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      cursor: move;
+      user-select: none;
+      border-bottom: 1px solid rgba(255, 255, 255, .12);
+      background: rgba(0, 0, 0, .22);
+    }
+
+    .voice-parser-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      font-size: 16px;
+      font-weight: 850;
+    }
+
+    .voice-parser-actions {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 0 0 auto;
+    }
+
+    .voice-live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #24d681;
+      box-shadow: 0 0 0 4px rgba(36, 214, 129, .14);
+      flex: 0 0 auto;
+    }
+
+    .voice-parser-toggle,
+    .voice-parser-close {
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      color: rgba(255, 255, 255, .76);
+      font-size: 20px;
+      line-height: 1;
+      flex: 0 0 auto;
+    }
+
+    .voice-parser-toggle:hover,
+    .voice-parser-close:hover {
+      background: rgba(255, 255, 255, .12);
+      color: #fff;
+    }
+
+    .voice-parser-window::-webkit-scrollbar,
+    .voice-parser-body::-webkit-scrollbar {
+      width: 4px;
+      height: 4px;
+    }
+
+    .voice-parser-window::-webkit-scrollbar-thumb,
+    .voice-parser-body::-webkit-scrollbar-thumb {
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .22);
+    }
+
+    .voice-parser-body {
+      min-height: 0;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      align-content: start;
+      overflow: auto;
+    }
+
+    .voice-parser-status {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 2px;
+    }
+
+    .voice-parser-pill {
+      height: 24px;
+      border-radius: 999px;
+      padding: 0 9px;
+      display: inline-flex;
+      align-items: center;
+      background: rgba(146, 85, 222, .22);
+      color: #dac4ff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .voice-line {
+      padding: 8px 9px;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .08);
+      color: rgba(255, 255, 255, .94);
+      font-size: 15px;
+      line-height: 1.48;
+      font-weight: 650;
+    }
+
+    .voice-line.ai {
+      background: rgba(146, 85, 222, .20);
+      border-color: rgba(218, 196, 255, .18);
+    }
+
+    .voice-meta {
+      display: inline;
+      color: rgba(237, 240, 247, .68);
+      font-size: 13px;
+      font-weight: 750;
+      margin-right: 6px;
+    }
+
+    .voice-meta span:first-child {
+      margin-right: 6px;
+    }
+
+    .voice-role {
+      color: #8fb7ff;
+      font-weight: 850;
+    }
+
+    .voice-line.ai .voice-role {
+      color: #dac4ff;
+    }
+
+    .voice-role::after {
+      content: "：";
+    }
+
+    .voice-text {
+      display: inline;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .primary-btn, .ghost-btn {
+      height: 36px;
+      border-radius: 6px;
+      padding: 0 14px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .primary-btn {
+      color: #fff;
+      background: var(--pink);
+    }
+
+    .ghost-btn {
+      color: var(--pink);
+      background: var(--pink-weak);
+    }
+
+    .product-mini {
+      display: grid;
+      grid-template-columns: 62px 1fr auto;
+      gap: 12px;
+      align-items: center;
+      border-radius: 12px;
+      background: #f8f9fc;
+      padding: 12px;
+      margin-top: 16px;
+    }
+
+    .product-mini .mini-img {
+      width: 62px;
+      height: 62px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #d6e1ef, #8ca2c0);
+    }
+
+    .mini-title {
+      font-weight: 850;
+      margin-bottom: 6px;
+    }
+
+    .mini-sub {
+      color: #7b8494;
+      font-size: 14px;
+    }
+
+    .template-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .template-item {
+      display: grid;
+      grid-template-columns: 120px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 14px;
+      border-radius: 10px;
+      background: #f8f9fc;
+      color: #3f4757;
+    }
+
+    .template-key {
+      font-weight: 850;
+      color: #202631;
+    }
+
+    .voice-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .voice-pill,
+    .category-chip {
+      height: 36px;
+      border-radius: 999px;
+      border: 1px solid #e4e8f0;
+      background: #fff;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #3a4252;
+      font-weight: 700;
+    }
+
+    .voice-pill.active,
+    .category-chip.active {
+      color: var(--pink);
+      border-color: #c7a5ef;
+      background: var(--pink-weak);
+    }
+
+    .speed-row {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-items: center;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .setting-label {
+      font-size: 18px;
+      font-weight: 650;
+      color: #252b37;
+    }
+
+    .speed-slider {
+      width: 100%;
+      accent-color: var(--pink);
+    }
+
+    .speed-control {
+      display: grid;
+      gap: 7px;
+    }
+
+    .speed-ticks {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      color: #9aa2b2;
+      font-size: 12px;
+      padding: 0 2px;
+    }
+
+    .speed-ticks span:nth-child(2),
+    .speed-ticks span:nth-child(3) {
+      text-align: center;
+    }
+
+    .speed-ticks span:last-child {
+      text-align: right;
+    }
+
+    .talk-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .category-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .talk-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .outline-pink-btn {
+      height: 36px;
+      border-radius: 6px;
+      padding: 0 14px;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--pink);
+      background: #fff;
+      border: 1px solid var(--pink);
+    }
+
+    .talk-item {
+      border: 1px solid #eef0f5;
+      border-radius: 12px;
+      background: #fff;
+      padding: 14px 16px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .talk-title {
+      font-weight: 850;
+      color: #202631;
+      margin-bottom: 6px;
+    }
+
+    .talk-meta {
+      color: #7d8493;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .comment-group-card {
+      border-radius: 14px;
+      background: #fff;
+      border: 1px solid #f0edf1;
+      box-shadow: 0 8px 22px rgba(27, 38, 66, .06);
+      padding: 22px 24px;
+      margin-bottom: 18px;
+    }
+
+    .comment-group-head {
+      display: grid;
+      grid-template-columns: auto 1fr auto auto;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .comment-group-title {
+      font-size: 20px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .select-like {
+      height: 44px;
+      border: 1px solid #dce1ea;
+      border-radius: 6px;
+      min-width: 230px;
+      padding: 0 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #252b37;
+      background: #fff;
+    }
+
+    .comment-actions-inline {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--pink);
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .comment-lines {
+      background: #fafafa;
+      border-radius: 8px;
+      padding: 14px 18px;
+      color: #7d7f87;
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    .comment-lines div {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 10px;
+    }
+
+    .board-modal-mask {
+      position: fixed;
+      inset: 0;
+      background: rgba(16, 24, 40, .18);
+      z-index: 70;
+      display: none;
+    }
+
+    .board-modal-mask.open {
+      display: block;
+    }
+
+    .board-modal {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      width: 720px;
+      max-width: calc(100vw - 80px);
+      border-radius: 6px;
+      background: #fff;
+      box-shadow: 0 22px 70px rgba(20, 28, 45, .22);
+      z-index: 71;
+      transform: translate(-50%, -50%);
+      display: none;
+      overflow: hidden;
+    }
+
+    .board-modal.open {
+      display: block;
+    }
+
+    .modal-head {
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      border-bottom: 1px solid #eef0f5;
+      font-size: 24px;
+      font-weight: 850;
+    }
+
+    .modal-body {
+      padding: 28px 30px;
+    }
+
+    .modal-form-row {
+      display: grid;
+      grid-template-columns: 130px 1fr 130px 1fr;
+      gap: 14px;
+      align-items: center;
+      margin-bottom: 22px;
+      font-size: 18px;
+    }
+
+    .modal-form-row.two {
+      grid-template-columns: 130px 1fr;
+    }
+
+    .required {
+      color: #ff2c55;
+      margin-right: 4px;
+    }
+
+    .modal-input {
+      height: 44px;
+      border: 1px solid #dce1ea;
+      border-radius: 6px;
+      padding: 0 16px;
+      font-size: 17px;
+      outline: 0;
+    }
+
+    .modal-input.focus {
+      border-color: var(--pink);
+      box-shadow: 0 0 0 2px rgba(146, 85, 222, .14);
+    }
+
+    .comment-edit-list {
+      display: grid;
+      gap: 10px;
+      margin: 12px 0 22px;
+    }
+
+    .comment-edit-row {
+      display: grid;
+      grid-template-columns: 40px 1fr 62px;
+      gap: 8px;
+      align-items: center;
+      background: #fafafa;
+      padding: 8px;
+    }
+
+    .recommend-box {
+      background: #fafafa;
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+
+    .recommend-tabs {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      margin-bottom: 14px;
+      font-weight: 800;
+    }
+
+    .recommend-tabs .active {
+      color: var(--pink);
+    }
+
+    .recommend-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      gap: 12px;
+      margin-top: 9px;
+    }
+
+    .recommend-text {
+      background: #f2f2f2;
+      padding: 10px 14px;
+      color: #666b75;
+    }
+
+    .modal-foot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 16px;
+      padding: 20px 30px;
+      border-top: 1px solid #eef0f5;
+    }
+
+    .record-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .record {
+      display: grid;
+      grid-template-columns: 86px 1fr;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed #edf0f5;
+      color: #50596b;
+    }
+
+    .record-time {
+      color: #8f97a7;
+      font-weight: 700;
+    }
+
+    .risk-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+    .risk-table th,
+    .risk-table td {
+      text-align: left;
+      padding: 13px 12px;
+      border-bottom: 1px solid #eef1f6;
+      vertical-align: top;
+    }
+
+    .risk-table th {
+      background: #f8f9fc;
+      color: #697386;
+      font-weight: 800;
+    }
+
+    .risk-word {
+      color: var(--red);
+      font-weight: 850;
+    }
+
+    .toast {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translateX(-50%) translateY(-12px);
+      opacity: 0;
+      background: #1f2937;
+      color: #fff;
+      border-radius: 999px;
+      padding: 12px 20px;
+      box-shadow: var(--shadow);
+      z-index: 100;
+      transition: .22s ease;
+      font-weight: 700;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+
+    @media (max-width: 1500px) {
+      body { overflow: hidden; }
+      .app {
+        width: calc(100vw / var(--demo-scale));
+        height: calc(100vh / var(--demo-scale));
+        min-height: 0;
+      }
+      .topbar {
+        grid-template-columns: 250px 1fr auto;
+        padding: 0 18px;
+      }
+      .topnav { gap: 22px; }
+      .main {
+        grid-template-columns: 248px 450px minmax(1100px, 1fr) 46px;
+        gap: 24px;
+        padding: 16px 14px 16px 22px;
+      }
+      .sidebar {
+        margin: -16px 0 -16px -22px;
+        padding-left: 22px;
+      }
+      .chat-card { padding: 24px 22px 22px; }
+      .products { padding: 22px 18px 0; }
+      .assistant-board { width: calc(465px / var(--demo-scale)); }
+      .product-row {
+        grid-template-columns: 42px 118px minmax(320px, 1fr) 100px 112px 120px 110px;
+        gap: 12px;
+      }
+      .thumb {
+        width: 92px;
+        height: 92px;
+      }
+      .p-title {
+        font-size: 16px;
+      }
+      .price {
+        font-size: 18px;
+      }
+      .row-btn {
+        height: 34px;
+        padding: 0 11px;
+      }
+      .row-buttons .banbo-product-video-entry {
+        height: 34px;
+        min-height: 34px;
+        padding: 0 11px;
+      }
+      .row-buttons {
+        gap: 8px;
+      }
+      .row-btn.pink {
+        min-width: 98px;
+      }
+      .start-explain.show {
+        min-width: 112px;
+      }
+      .hot-data {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <img class="douyin" src="assets/douyin-baiying-logo.png" alt="抖音电商·百应">
+        <span>抖音电商·百应</span>
+      </div>
+      <nav class="topnav">
+        <span>首页</span>
+        <span class="active">经营</span>
+        <span>选品</span>
+        <span>创作</span>
+        <span>营销</span>
+        <span>体验</span>
+        <span>成长</span>
+        <span>数据</span>
+        <span>财账</span>
+        <span>关联平台</span>
+      </nav>
+      <div class="top-actions">
+        <img class="top-actions-img" src="assets/top-actions.png" alt="通知消息设置">
+        <div class="account">
+          <span class="avatar">HH</span>
+          <span class="account-name">HELLY HANSEN户外...</span>
+          <span>⌄</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="main">
+      <aside class="sidebar">
+        <div class="side-group">
+          <div class="side-title">□ 直播</div>
+          <div class="side-item">直播预告</div>
+          <div class="side-item">直播计划</div>
+          <div class="side-item active">直播中控台</div>
+          <div class="side-item">直播明细</div>
+          <div class="side-item">直播闪购</div>
+          <div class="side-item">直播回放</div>
+          <div class="side-item">直播货盘</div>
+          <div class="side-item">直播设置</div>
+          <div class="side-item">抖客直播间分销</div>
+        </div>
+        <div class="side-group">
+          <div class="side-title" style="color:#4a5568">□ 橱窗</div>
+          <div class="side-item">经营概览</div>
+          <div class="side-item">橱窗商品管理</div>
+          <div class="side-item">购物积分</div>
+          <div class="side-item">粉丝心愿</div>
+          <div class="side-item">橱窗装修</div>
+          <div class="side-item">橱窗设置</div>
+        </div>
+        <div class="side-group">
+          <div class="side-title" style="color:#4a5568">□ 视频</div>
+          <div class="side-item">视频管理</div>
+        </div>
+      </aside>
+
+      <section class="interaction">
+        <div class="panel chat-card">
+          <h1 class="section-title">
+            <span>直播互动<img class="collapse-arrow" src="assets/collapse-arrow.png" alt=""></span>
+            <img class="title-tools-img" src="assets/live-panel-buttons.png" alt="声音画面设置">
+          </h1>
+          <div class="tabs-mini">
+            <button class="selected">全部</button>
+            <button>问询</button>
+            <button>粉丝</button>
+            <button>求讲解</button>
+            <button>更多⌄</button>
+          </div>
+          <div class="chat-list">
+            <div class="chat-line"><span class="tag green">潜在新客</span>三瓶青年：胸前图案是白色嘛</div>
+            <div class="chat-line"><span class="tag blue">已购买</span>忠遇清晖 ゜人间客：在拍就是663了</div>
+            <div class="chat-line"><span class="tag green">主播</span>我：@忠*** 换个账号</div>
+            <div class="chat-line"><span class="tag green">主播</span>我：左上方点关注，右上方在线人数下面领券，再下单噢</div>
+            <div class="chat-line"><span class="tag orange">优质用户</span>泥人：看看女款防晒衣</div>
+            <div class="chat-line"><span class="tag green">主播</span>我：@泥*** 32 33号链接有女款防晒可以看下喜欢哪个链接</div>
+            <div class="chat-line"><span class="tag green">潜在新客</span>迷彩：【爱心】</div>
+            <div class="chat-line"><span class="tag blue">已购买</span>Patrick：173/148</div>
+            <div class="chat-line"><span class="tag green">主播</span>我：亲丽汉森官方正品直播间！安排七天无理由，运费险，喜欢放心感受</div>
+          </div>
+          <div class="comment-box">
+            <div>回复观众或直接发评，enter一键发送</div>
+            <div class="comment-actions">
+              <span>○ ｜ □ 发布后置顶 ⓘ</span>
+              <span>发布</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel tools-card">
+          <h2 class="section-title" style="margin-bottom:14px">
+            <span>直播工具<img class="collapse-arrow" src="assets/collapse-arrow.png" alt=""></span>
+          </h2>
+          <div class="tool-grid">
+            <div class="tool-tile">
+              <span class="tool-icon"><span class="geo-icon square"></span></span>
+              <div><div class="tool-name">超级福袋</div><div class="tool-desc">实物抽奖，提流量</div></div>
+            </div>
+            <div class="tool-tile">
+              <span class="tool-icon"><span class="geo-icon circle"></span></span>
+              <div><div class="tool-name">闪购</div><div class="tool-desc">实时发品，提效率</div></div>
+            </div>
+            <div class="tool-tile">
+              <span class="tool-icon"><span class="geo-icon triangle"></span></span>
+              <div><div class="tool-name">竞拍</div><div class="tool-desc">互动竞价，拉人气</div></div>
+            </div>
+            <div class="tool-tile">
+              <span class="tool-icon"><span class="geo-icon diamond"></span></span>
+              <div><div class="tool-name">优惠券</div><div class="tool-desc">让利补贴，提销量</div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="content">
+        <div class="panel metrics">
+          <div class="control-head">
+            <h2 style="margin:0;font-size:24px;font-weight:800">直播中控</h2>
+            <span class="live-chip">直播中</span>
+            <span style="color:#616979;font-weight:650">暂未关联场次计划</span>
+            <span class="plan-link">关联计划</span>
+            <div class="refresh-tabs">
+              <span>11:39更新</span>
+              <span class="pill active">每1分钟</span>
+              <span class="pill">每5分钟</span>
+              <span class="pill">累计</span>
+              <span class="outline-pill">□ 直播大屏</span>
+              <span class="outline-pill">□ 主播大屏</span>
+              <span class="pill">···</span>
+            </div>
+          </div>
+          <div class="metric-row">
+            <div class="metric-card">
+              <div class="metric-label">成交金额 ⓘ</div>
+              <div class="metric-value">¥0.00</div>
+              <div class="metric-foot">环比 <span style="color:#ff4d62">↑ -</span><svg class="trend" viewBox="0 0 96 40"><polyline points="0,34 6,35 12,2 18,36 26,34 32,8 40,35 48,35 56,11 62,34 70,35 78,8 84,34 94,35" fill="none" stroke="#1769ff" stroke-width="3"/></svg></div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">平均在线人数 ⓘ</div>
+              <div class="metric-value">13</div>
+              <div class="metric-foot">环比 <span style="color:#ff4d62">↑ 0.00%</span><svg class="trend" viewBox="0 0 96 40"><path d="M0 25 C 14 4, 22 18, 35 10 S 62 18, 74 14 90 21, 96 20 L96 40 L0 40 Z" fill="#dbe8ff"/><polyline points="0,25 10,10 18,18 25,9 34,12 43,18 52,10 64,16 76,14 88,21 96,20" fill="none" stroke="#1769ff" stroke-width="3"/></svg></div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">观看成交率 ⓘ</div>
+              <div class="metric-value">0.00%</div>
+              <div class="metric-foot">环比 <span style="color:#ff4d62">↑ -</span><svg class="trend" viewBox="0 0 96 40"><polyline points="0,34 8,35 16,5 22,35 32,35 42,5 48,35 60,34 70,4 78,35 84,35 92,6" fill="none" stroke="#1769ff" stroke-width="3"/></svg></div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">UV 价值 ⓘ</div>
+              <div class="metric-value">¥0.00</div>
+              <div class="metric-foot">环比 <span style="color:#ff4d62">↑ -</span><svg class="trend" viewBox="0 0 96 40"><polyline points="0,34 8,35 14,5 22,35 30,35 38,8 46,35 55,34 63,7 70,35 80,35 90,8" fill="none" stroke="#1769ff" stroke-width="3"/></svg></div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">新增粉丝数 ⓘ</div>
+              <div class="metric-value">0</div>
+              <div class="metric-foot">环比 <span style="color:#ff4d62">↑ -</span><svg class="trend" viewBox="0 0 96 40"><polyline points="0,35 12,35 22,35 30,35 40,35 48,35 58,3 66,35 75,35 84,4 94,35" fill="none" stroke="#1769ff" stroke-width="3"/></svg></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel products">
+          <div class="product-top">
+            <h2>直播商品</h2>
+            <span class="sub">待上架商品</span>
+            <div class="product-actions">
+              <span>⟳ 刷新列表</span>
+              <span>□ 设置商品推荐卡 <span style="color:#1769ff">○</span></span>
+              <span>△ 查看分组</span>
+              <span>△ 搭配管理</span>
+            </div>
+          </div>
+
+          <div class="filters">
+            <label><span class="checkbox"></span>全选</label>
+            <div class="search"><input placeholder="请输入商品名称或ID" /><button>⌕</button></div>
+            <button class="filter-btn">□ 筛选⌄</button>
+            <span></span>
+            <button class="add-product">＋添加商品</button>
+          </div>
+
+          <div class="label-row">
+            商品标签: ⓘ
+            <span class="soft-label">高成交</span>
+            <span class="soft-label">高价值</span>
+            <span class="soft-label">高转化</span>
+            <span class="soft-label">高点击率</span>
+            <span class="soft-label">低点击率</span>
+            <span class="soft-label">低下单率</span>
+            <span class="soft-label">低支付率</span>
+            <div class="diagnosis">收起诊断标签⌃</div>
+          </div>
+
+          <div class="product-list" id="productList">
+            <article class="product-row highlight" data-index="1" data-price="¥680.00" data-img="assets/product-1.png" data-title="【王一博同款】HELLY HANSEN/HH26夏情侣速干抗菌短袖">
+              <div class="index-cell">1</div>
+              <div class="thumb has-image"><img src="assets/product-1.png" alt="王一博同款速干短袖"><span class="status">讲解中</span></div>
+              <div class="product-meta">
+                <div class="p-title">HELLY HANSEN/HH 26吸湿速干透气后背图案运动短袖 <span class="id-chip">ID</span></div>
+                <span class="ship" style="border-color:#21bf73;color:#15a865">高成交</span>
+                <span class="ship">运费险</span>
+                <div class="subtitle">未设提词 ✎ ｜ 设计款短袖 速干透气 ✎</div>
+              </div>
+              <div><div class="price">¥680.00</div><div class="subvalue">到手价</div></div>
+              <div><div class="price">3/39</div><div class="subvalue">售出/库存</div></div>
+              <div><div class="price">¥1938.00</div><div class="subvalue">成交金额</div></div>
+              <div><div class="price">0.62%</div><div class="subvalue">曝光成交率⌄</div></div>
+              <div class="row-buttons">
+                <span class="hot-data">上播：31， 点击：4586， 支付：115</span>
+                <button class="row-btn">营销活动</button>
+                <button class="row-btn">预热</button>
+                <button class="row-btn">更多数据</button>
+                <button class="row-btn">下架</button>
+                <button class="row-btn pink start-explain show" data-product="1"><span class="sound-bars"><i></i><i></i><i></i><i></i></span>开始讲解</button>
+                <button class="row-btn">···</button>
+              </div>
+            </article>
+
+            <article class="product-row active" data-index="2" data-price="¥680.00" data-img="assets/product-2.png" data-title="【王一博同款】HELLY HANSEN/HH26夏情侣速干抗菌短袖">
+              <div class="index-cell">2</div>
+              <div class="thumb has-image"><img src="assets/product-2.png" alt="王一博同款速干短袖"></div>
+              <div class="product-meta">
+                <div class="p-title">【王一博同款】HELLY HANSEN/HH26夏情侣速干抗菌短袖 <span class="id-chip">ID</span></div>
+                <span class="ship">运费险</span>
+                <div class="subtitle">未设提词 ✎ ｜ 王一博明星同款速干防晒短袖 ✎</div>
+              </div>
+              <div><div class="price">¥680.00</div><div class="subvalue">到手价</div></div>
+              <div><div class="price">1/123</div><div class="subvalue">售出/库存</div></div>
+              <div><div class="price">¥680.00</div><div class="subvalue">成交金额</div></div>
+              <div><div class="price">0.20%</div><div class="subvalue">曝光成交率⌄</div></div>
+              <div class="row-buttons">
+                <span class="hot-data">上播：32， 点击：3023， 支付：42</span>
+                <button class="row-btn">营销活动</button>
+                <button class="row-btn">预热</button>
+                <button class="row-btn">更多数据</button>
+                <button class="row-btn">下架</button>
+                <button class="row-btn">讲解</button>
+                <button class="row-btn pink start-explain show" data-product="2"><span class="sound-bars"><i></i><i></i><i></i><i></i></span>开始讲解</button>
+                <button class="row-btn">···</button>
+              </div>
+            </article>
+
+            <article class="product-row" data-index="3" data-price="¥972.00" data-img="assets/product-3.png" data-title="HELLY HANSEN/HH 26夏男速干凉感舒适防晒百搭针织长裤">
+              <div class="index-cell">3</div>
+              <div class="thumb has-image"><img src="assets/product-3.png" alt="速干凉感长裤"></div>
+              <div class="product-meta">
+                <div class="p-title">HELLY HANSEN/HH 26夏男速干凉感舒适防晒百搭针织长裤 <span class="id-chip">ID</span></div>
+                <span class="ship">运费险</span>
+                <div class="subtitle">未设提词 ✎ ｜ 防晒速干凉感长裤 ✎</div>
+              </div>
+              <div><div class="price">¥972.00</div><div class="subvalue">到手价</div></div>
+              <div><div class="price">0/366</div><div class="subvalue">售出/库存</div></div>
+              <div><div class="price">¥0.00</div><div class="subvalue">成交金额</div></div>
+              <div><div class="price">0.00%</div><div class="subvalue">曝光成交率⌄</div></div>
+              <div class="row-buttons">
+                <span class="hot-data">上播：2， 点击：44， 支付：0</span>
+                <button class="row-btn">营销活动</button>
+                <button class="row-btn">预热</button>
+                <button class="row-btn">更多数据</button>
+                <button class="row-btn">下架</button>
+                <button class="row-btn">讲解</button>
+                <button class="row-btn pink start-explain show" data-product="3"><span class="sound-bars"><i></i><i></i><i></i><i></i></span>开始讲解</button>
+                <button class="row-btn">···</button>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <div class="right-float-column">
+        <button class="assistant-float" id="assistantFloat" aria-label="打开AI伴播">
+          <span class="orb"><img src="../assets/ai-banbo-mark.png" alt="" /></span>
+          <span class="vertical">AI<br>伴<br>播</span>
+        </button>
+        <img class="side-rail" src="assets/right-rail.png" alt="右侧快捷浮标">
+      </div>
+    </main>
+  </div>
+
+  <div class="phone-preview" id="phonePreview">
+    <div class="phone-live">
+      <div class="phone-top"><span>直播中</span><span>13人在线</span></div>
+      <div class="phone-host"></div>
+      <div class="phone-bubbles">
+        <span>新进来的宝宝点关注</span>
+        <span>看小黄车链接噢</span>
+      </div>
+      <div class="phone-link" id="phoneLink">
+        <div class="phone-thumb"></div>
+        <div>
+          <div class="phone-link-title" id="phoneLinkTitle">当前讲解商品</div>
+          <div class="phone-link-price" id="phoneLinkPrice">¥972.00</div>
+        </div>
+        <button class="buy-btn">去抢</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="strategy-popup-stack" id="strategyPopupStack" aria-live="polite"></div>
+
+  <section class="voice-parser-window" id="voiceParserWindow" aria-label="实时语音解析浮窗">
+    <div class="voice-parser-head" id="voiceParserHandle">
+      <div class="voice-parser-title"><span class="voice-live-dot"></span><span>实时语音解析</span></div>
+      <div class="voice-parser-actions">
+        <button class="voice-parser-toggle" id="toggleVoiceParser" type="button" aria-label="收起实时语音解析">−</button>
+        <button class="voice-parser-close" id="closeVoiceParser" type="button" aria-label="关闭实时语音解析">×</button>
+      </div>
+    </div>
+    <div class="voice-parser-body">
+      <article class="voice-line">
+        <div class="voice-meta"><span>11:23:34</span><span class="voice-role">主播</span></div>
+        <div class="voice-text">接触凉感，它的面料成本价非常高，因为一般这种面料的话，它的短袖都要花一千多。</div>
+      </article>
+      <article class="voice-line ai">
+        <div class="voice-meta"><span>11:23:38</span><span class="voice-role">智能搭话</span></div>
+        <div class="voice-text">对的，要一千多的</div>
+      </article>
+      <article class="voice-line">
+        <div class="voice-meta"><span>11:23:40</span><span class="voice-role">主播</span></div>
+        <div class="voice-text">你今天买的是一件防晒服，然后今天做到六幺八听价格，一千五一千四一千三一千二还能再减，对尺码很少报。</div>
+      </article>
+      <article class="voice-line">
+        <div class="voice-meta"><span>11:23:56</span><span class="voice-role">主播</span></div>
+        <div class="voice-text">身高体重回答，五个尺码。我们现在给大家上九十二斤，肯定要穿最小码，一百七十八斤的话去选择双叉面料，冰冰凉凉，你想贴身完全没问题，因为它是接触瞬间凉感。</div>
+      </article>
+      <article class="voice-line ai">
+        <div class="voice-meta"><span>11:23:55</span><span class="voice-role">智能搭话</span></div>
+        <div class="voice-text">非常舒适</div>
+      </article>
+      <article class="voice-line">
+        <div class="voice-meta"><span>11:23:56</span><span class="voice-role">主播</span></div>
+        <div class="voice-text">有国家检测回到国家尺重凉凉的冰冰的，有一点点像女生穿的真丝睡衣，但我觉得它比真丝睡衣再冰一点，超级舒服，很丝滑的。</div>
+      </article>
+    </div>
+  </section>
+
+  <section class="assistant-board" id="assistantBoard">
+    <div class="board-header">
+      <div class="plugin-logo">
+        <span class="plugin-mark">✦</span>
+        <span>智播助手</span>
+        <span class="version">V2.0.31 · <span class="version-update">有更新 ⬆</span></span>
+      </div>
+      <div class="header-actions">
+        <button class="header-btn">打开后台</button>
+        <button class="header-btn" id="closeBoard">↘</button>
+      </div>
+    </div>
+    <div class="board-body">
+      <nav class="board-tabs">
+        <button class="board-tab active" data-tab="operation">AI直播策略</button>
+        <button class="board-tab" data-tab="explain">直播讲解</button>
+        <button class="board-tab" data-tab="talk">智能搭话</button>
+        <button class="board-tab" data-tab="comment">自动发评/回评</button>
+        <button class="board-tab" data-tab="risk">违规风险监控</button>
+      </nav>
+
+      <div class="tab-content active" id="tab-operation">
+        <div class="strategy-panel">
+          <div class="external-board-bar">
+            <span class="external-board-label">外置看板</span>
+            <div class="external-board-links">
+              <a class="external-board-link" href="host-board.html" target="_blank" rel="noopener">
+                主播看板 <span class="external-board-icon">↗</span>
+              </a>
+              <button class="external-board-link" id="openVoiceParser" type="button">
+                实时语音解析 <span class="external-board-icon">□</span>
+              </button>
+            </div>
+          </div>
+          <div class="config-card">
+            <div class="strategy-categories">
+              <button class="strategy-category active" data-strategy-category="atmosphere">氛围互动</button>
+              <button class="strategy-category" data-strategy-category="traffic">流量承接</button>
+              <button class="strategy-category" data-strategy-category="conversion">转化成交</button>
+            </div>
+            <div class="strategy-chart">
+              <div class="chart-title">人均观看时长<br>3分20秒</div>
+              <div class="chart-title right">在线人数<br>80</div>
+              <svg viewBox="0 0 620 220" preserveAspectRatio="none" aria-label="直播策略数据曲线">
+                <defs>
+                  <linearGradient id="blueArea" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0" stop-color="#2F68FF" stop-opacity=".22"/>
+                    <stop offset="1" stop-color="#2F68FF" stop-opacity="0"/>
+                  </linearGradient>
+                  <linearGradient id="orangeArea" x1="0" x2="0" y1="0" y2="1">
+                    <stop offset="0" stop-color="#F6AD37" stop-opacity=".20"/>
+                    <stop offset="1" stop-color="#F6AD37" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <g stroke="#54617e" stroke-dasharray="4 5" opacity=".58">
+                  <line x1="0" y1="38" x2="620" y2="38"/>
+                  <line x1="0" y1="84" x2="620" y2="84"/>
+                  <line x1="0" y1="130" x2="620" y2="130"/>
+                  <line x1="0" y1="176" x2="620" y2="176"/>
+                </g>
+                <path d="M0 194 C20 150 32 120 46 132 C70 148 82 20 94 88 C110 150 128 160 150 155 C190 150 220 160 250 146 C280 132 292 35 310 86 C330 158 356 154 382 150 C420 142 442 72 458 92 C480 118 492 32 506 116 C528 146 552 136 578 150 C596 156 610 150 620 156 L620 220 L0 220 Z" fill="url(#blueArea)"/>
+                <path d="M0 196 C52 156 86 150 116 160 C150 174 202 164 250 152 C290 140 304 76 332 118 C360 158 398 152 430 120 C454 84 470 50 494 78 C522 118 540 132 570 140 C596 148 608 150 620 154 L620 220 L0 220 Z" fill="url(#orangeArea)"/>
+                <path d="M0 194 C20 150 32 120 46 132 C70 148 82 20 94 88 C110 150 128 160 150 155 C190 150 220 160 250 146 C280 132 292 35 310 86 C330 158 356 154 382 150 C420 142 442 72 458 92 C480 118 492 32 506 116 C528 146 552 136 578 150 C596 156 610 150 620 156" fill="none" stroke="#2F68FF" stroke-width="3"/>
+                <path d="M0 196 C52 156 86 150 116 160 C150 174 202 164 250 152 C290 140 304 76 332 118 C360 158 398 152 430 120 C454 84 470 50 494 78 C522 118 540 132 570 140 C596 148 608 150 620 154" fill="none" stroke="#F6AD37" stroke-width="3"/>
+                <g fill="#aeb8d0" font-size="12" font-weight="700">
+                  <text x="0" y="214">12:37</text>
+                  <text x="150" y="214">13:27</text>
+                  <text x="300" y="214">15:07</text>
+                  <text x="458" y="214">15:57</text>
+                  <text x="584" y="214">17:37</text>
+                </g>
+              </svg>
+            </div>
+            <div class="chart-controls">
+              <div class="strategy-fields" id="strategyFields"></div>
+            </div>
+          </div>
+
+          <div class="strategy-notices">
+            <div class="strategy-notice">
+              <div class="notice-head"><span class="notice-tag red">高风险</span><span class="notice-title">高风险话术</span><span class="notice-time">11:42</span></div>
+              <div class="notice-body">“这是<span class="risk-word">全网最低价</span>”<br>极限价格表述，建议改为“直播间优惠力度比较大”</div>
+            </div>
+            <div class="strategy-notice">
+              <div class="notice-head"><span class="notice-tag blue">需注意</span><span class="notice-title">在线人数下降 18%</span><span class="notice-time">11:35</span></div>
+              <div class="notice-body">当前商品已连续讲解 16 分钟，建议切换讲解商品，或发福袋提升观众留存。</div>
+            </div>
+            <div class="strategy-notice">
+              <div class="notice-head"><span class="notice-tag blue">需注意</span><span class="notice-title">人均观看时长下降 12%</span><span class="notice-time">11:30</span></div>
+              <div class="notice-body">建议加快讲解节奏，补充产品利益点和适用场景。</div>
+            </div>
+            <div class="strategy-notice">
+              <div class="notice-head"><span class="notice-tag green">上升</span><span class="notice-title">在线人数上升 26%</span><span class="notice-time">11:24</span></div>
+              <div class="notice-body">建议趁热重复当前福利机制，并引导新进用户关注小黄车 1 号链接。</div>
+            </div>
+            <div class="strategy-notice">
+              <div class="notice-head"><span class="notice-tag green">上升</span><span class="notice-title">人均观看时长上升 15%</span><span class="notice-time">11:18</span></div>
+              <div class="notice-body">当前讲解节奏有效，建议保持节奏并增加互动问答。</div>
+            </div>
+            <div class="strategy-notice">
+              <div class="notice-head"><span class="notice-tag blue">需注意</span><span class="notice-title">商品已讲解 17 分钟</span><span class="notice-time">11:12</span></div>
+              <div class="notice-body">建议总结核心卖点后切换到下一款，避免用户兴趣衰减。</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-explain">
+        <div class="config-card">
+          <div class="setting-row compact">
+            <span>商品自动弹讲解：</span>
+            <button class="switch on" id="linkSwitch"></button>
+            <span class="freq-label">弹出频率：</span>
+            <input class="number-input" id="intervalInput" value="7" disabled />
+            <span class="unit-label">秒/次</span>
+            <button class="pink-link" id="editIntervalBtn">修改</button>
+          </div>
+          <div class="muted">点击小黄车商品列表中的【开始讲解】按钮，系统将自动按频率弹出讲解商品的链接</div>
+          <div class="setting-row">
+            <span>主播语音切讲解：</span>
+            <button class="switch" id="voiceExplainSwitch"></button>
+          </div>
+          <div class="muted" id="voiceExplainTip">此功能须先开启直播间实时语音解析 <button class="pink-link" id="enableSpeechAnalysis">去开启&gt;</button></div>
+        </div>
+        <div class="config-card">
+          <div class="setting-row">
+            <span>主播语音置顶商品：</span>
+            <button class="switch" id="voicePinSwitch"></button>
+          </div>
+          <div class="muted" id="voicePinTip">此功能须先开启直播间实时语音解析 <button class="pink-link" id="enableSpeechAnalysisForPin">去开启&gt;</button></div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-talk">
+        <div class="config-card">
+          <div class="setting-row">
+            <span>智能搭话：</span>
+            <button class="switch" id="smartTalkSwitch"></button>
+          </div>
+          <div class="muted" id="smartTalkTip">此功能须先开启直播间实时语音解析 <button class="pink-link" id="enableSpeechAnalysisForTalk">去开启&gt;</button></div>
+          <div>
+            <div class="setting-row" style="margin-bottom:0"><span class="setting-label">音色：</span></div>
+            <div class="voice-options">
+              <button class="voice-pill">热情男声</button>
+              <button class="voice-pill active">热情女声</button>
+              <button class="voice-pill">沉稳男声</button>
+              <button class="voice-pill">沉稳女声</button>
+              <button class="voice-pill">可爱男生</button>
+              <button class="voice-pill">可爱女生</button>
+              <button class="voice-pill">+ 添加自定义音色</button>
+            </div>
+          </div>
+          <div class="speed-row">
+            <span class="setting-label">语速：</span>
+            <div class="speed-control">
+              <input class="speed-slider" id="speedSlider" type="range" min="0.5" max="2" step="0.1" value="1" />
+              <div class="speed-ticks"><span>0.5x</span><span>1.0x</span><span>1.5x</span><span>2.0x</span></div>
+            </div>
+            <span id="speedValue" class="pink-link">1.0x</span>
+          </div>
+        </div>
+        <div class="config-card">
+          <div class="talk-toolbar">
+            <div class="category-row">
+              <button class="category-chip active">全部</button>
+              <button class="category-chip">上链接</button>
+              <button class="category-chip">应声</button>
+              <button class="category-chip">逼单</button>
+            </div>
+            <div class="action-row">
+              <button class="outline-pink-btn">+ 添加搭话内容</button>
+            </div>
+          </div>
+          <div class="talk-list">
+            <div class="talk-item">
+              <div>
+                <div class="talk-title">321，上链接！</div>
+                <div class="talk-meta">触发条件：准备上链接 / 321 / 开拍</div>
+              </div>
+              <button class="switch on" data-switch></button>
+            </div>
+            <div class="talk-item">
+              <div>
+                <div class="talk-title">最后一波，想要的宝宝抓紧拍。</div>
+                <div class="talk-meta">触发条件：最后一波 / 马上恢复原价 / 库存不多</div>
+              </div>
+              <button class="switch on" data-switch></button>
+            </div>
+            <div class="talk-item">
+              <div>
+                <div class="talk-title">对！这个版型就是很显瘦。</div>
+                <div class="talk-meta">触发条件：对不对 / 是不是 / 显不显瘦</div>
+              </div>
+              <button class="switch on" data-switch></button>
+            </div>
+            <div class="talk-item">
+              <div>
+                <div class="talk-title">好！现在拍七天无理由，放心试穿。</div>
+                <div class="talk-meta">触发条件：好不好 / 可以吗 / 能不能退换</div>
+              </div>
+              <button class="switch" data-switch></button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-comment">
+        <div class="comment-group-card">
+          <div class="comment-group-head">
+            <div class="comment-group-title">自动发评</div>
+            <div class="select-like"><span>感谢下单</span><span>⌄</span></div>
+            <button class="switch" data-switch></button>
+            <div class="comment-actions-inline"><button data-open-comment-modal>✎ 编辑</button><button>□ 复制</button></div>
+          </div>
+          <div class="muted" style="margin-bottom:14px">单条间隔：5 秒 发送频率：2 分钟</div>
+          <div class="comment-lines">
+            <div><span>1</span><span>感谢下单的宝子，期待你收到货后的反馈哦！有任何问题随时找我们。</span></div>
+            <div><span>2</span><span>你的选择让我们充满信心，继续为大家带来更好的产品。</span></div>
+          </div>
+        </div>
+        <div class="comment-group-card">
+          <div class="comment-group-head" style="margin-bottom:0">
+            <div class="comment-group-title">自动回评</div>
+            <div class="select-like"><span>默认分组</span><span>⌄</span></div>
+            <button class="switch" data-switch></button>
+            <div class="comment-actions-inline"><button data-open-comment-modal>✎ 编辑</button><button>□ 复制</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-risk">
+        <div class="config-card">
+          <div class="setting-row">
+            <span>违规风险监控：</span>
+            <button class="switch" id="riskMonitorSwitch"></button>
+          </div>
+          <div class="muted" id="riskMonitorTip">此功能须先开启直播间实时语音解析 <button class="pink-link" id="enableSpeechAnalysisForRisk">去开启&gt;</button></div>
+        </div>
+        <div class="config-card">
+          <table class="risk-table">
+            <thead>
+              <tr><th>时间</th><th>高风险话术内容</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>11:39:18</td><td>“这是<span class="risk-word">全网最低价</span>”<br>极限价格表述，建议改为“直播间优惠力度比较大”</td></tr>
+              <tr><td>11:34:42</td><td>“这件衣服<span class="risk-word">绝对</span>防水”<br>绝对化表达，建议改为“具备较好的防泼水表现”</td></tr>
+              <tr><td>11:27:09</td><td>“<span class="risk-word">百分百</span>有效防晒”<br>效果承诺，建议改为“多数用户反馈防晒体验不错”</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="toast board-toast" id="toast">已开始讲解当前商品</div>
+  </section>
+
+  <div class="board-modal-mask" id="commentModalMask"></div>
+  <div class="board-modal" id="commentModal">
+    <div class="modal-head">
+      <span>编辑评论组</span>
+      <button id="closeCommentModal">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-form-row two">
+        <label><span class="required">*</span>评论组名称:</label>
+        <input class="modal-input focus" value="感谢下单" />
+      </div>
+      <div class="modal-form-row">
+        <label><span class="required">*</span>单条间隔(秒):</label>
+        <input class="modal-input" value="5" />
+        <label><span class="required">*</span>发送频率(分钟):</label>
+        <input class="modal-input" value="2" />
+      </div>
+      <div style="font-size:18px;margin-bottom:12px"><span class="required">*</span>评论内容:</div>
+      <div class="comment-edit-list">
+        <div class="comment-edit-row"><input class="modal-input" value="1" /><input class="modal-input" value="感谢下单的宝子，期待你收到货后的反馈哦！有任何问题" /><span class="muted">31 / 50</span></div>
+        <div class="comment-edit-row"><input class="modal-input" value="2" /><input class="modal-input" value="你的选择让我们充满信心，继续为大家带来更好的产品。" /><span class="muted">25 / 50</span></div>
+      </div>
+      <button class="pink-link">+ 新增一条评论</button>
+      <div class="recommend-box" style="margin-top:22px">
+        <div class="recommend-tabs">
+          <span>内容推荐：</span>
+          <span class="active">促进转化</span>
+          <span>关注转粉</span>
+          <span>商品讲解</span>
+          <span>提升互动</span>
+          <span style="margin-left:auto;color:var(--pink)">换一批</span>
+        </div>
+        <div class="recommend-item"><div class="recommend-text">已拍的宝贝，给您备注赠品，安排加急发货</div><button class="ghost-btn">+ 添加</button></div>
+        <div class="recommend-item"><div class="recommend-text">现货现发 今天拍下的姐妹 7天无理由 运费险给你们安排上了</div><button class="ghost-btn">+ 添加</button></div>
+        <div class="recommend-item"><div class="recommend-text">官方旗舰店！品质保障！售后保障！无忧下单~</div><button class="ghost-btn">+ 添加</button></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="ghost-btn" id="cancelCommentModal">取消</button>
+      <button class="primary-btn" id="confirmCommentModal">确定</button>
+    </div>
+  </div>
+
+  <script>
+    const board = document.getElementById('assistantBoard');
+    const floatBtn = document.getElementById('assistantFloat');
+    const closeBoard = document.getElementById('closeBoard');
+    const strategyPopupStack = document.getElementById('strategyPopupStack');
+    const openVoiceParser = document.getElementById('openVoiceParser');
+    const voiceParserWindow = document.getElementById('voiceParserWindow');
+    const voiceParserHandle = document.getElementById('voiceParserHandle');
+    const toggleVoiceParser = document.getElementById('toggleVoiceParser');
+    const closeVoiceParser = document.getElementById('closeVoiceParser');
+    const toast = document.getElementById('toast');
+    const linkSwitch = document.getElementById('linkSwitch');
+    const intervalInput = document.getElementById('intervalInput');
+    const editIntervalBtn = document.getElementById('editIntervalBtn');
+    const voiceExplainSwitch = document.getElementById('voiceExplainSwitch');
+    const voiceExplainTip = document.getElementById('voiceExplainTip');
+    const voicePinSwitch = document.getElementById('voicePinSwitch');
+    const voicePinTip = document.getElementById('voicePinTip');
+    const smartTalkSwitch = document.getElementById('smartTalkSwitch');
+    const smartTalkTip = document.getElementById('smartTalkTip');
+    const riskMonitorSwitch = document.getElementById('riskMonitorSwitch');
+    const riskMonitorTip = document.getElementById('riskMonitorTip');
+    const speedSlider = document.getElementById('speedSlider');
+    const speedValue = document.getElementById('speedValue');
+    const commentModal = document.getElementById('commentModal');
+    const commentModalMask = document.getElementById('commentModalMask');
+    const startButtons = Array.from(document.querySelectorAll('.start-explain'));
+    let speakingButton = null;
+    let speechAnalysisEnabled = false;
+    let voiceParserDrag = null;
+    const closedStrategyNoticeIds = new Set();
+    const strategyMetricMap = {
+      atmosphere: ['在线人数', '曝光观看率', '人均观看时长', '互动率', '关注率'],
+      traffic: ['在线人数', '商品点击率', '点击成交率'],
+      conversion: ['在线人数', '成交订单数', '成交金额', '千次观看成交金额']
+    };
+
+    function collectStrategyNotices() {
+      return Array.from(document.querySelectorAll('#tab-operation .strategy-notice')).map((notice, index) => {
+        const tag = notice.querySelector('.notice-tag');
+        const title = notice.querySelector('.notice-title');
+        const time = notice.querySelector('.notice-time');
+        const body = notice.querySelector('.notice-body');
+        return {
+          id: `strategy-notice-${index}`,
+          tag: tag?.textContent.trim() || '',
+          tagClass: Array.from(tag?.classList || []).filter(name => name !== 'notice-tag').join(' '),
+          title: title?.textContent.trim() || '',
+          time: time?.textContent.trim() || '',
+          body: body?.innerHTML.trim() || ''
+        };
+      });
+    }
+
+    function renderStrategyPopupStack() {
+      const boardOpen = board.classList.contains('open');
+      const notices = collectStrategyNotices().filter(item => !closedStrategyNoticeIds.has(item.id));
+      strategyPopupStack.classList.toggle('is-hidden', boardOpen || notices.length === 0);
+      strategyPopupStack.innerHTML = '';
+
+      notices.forEach(item => {
+        const card = document.createElement('article');
+        card.className = 'strategy-popup';
+
+        const head = document.createElement('div');
+        head.className = 'notice-head';
+
+        const dot = document.createElement('span');
+        dot.className = `strategy-popup-dot ${item.tagClass}`.trim();
+        dot.setAttribute('aria-label', item.tag);
+
+        const title = document.createElement('span');
+        title.className = 'notice-title';
+        title.textContent = item.title;
+
+        const time = document.createElement('span');
+        time.className = 'notice-time';
+        time.textContent = item.time;
+
+        const body = document.createElement('div');
+        body.className = 'notice-body';
+        body.innerHTML = item.body.replace(/\n/g, '<br>');
+
+        const close = document.createElement('button');
+        close.className = 'strategy-popup-close';
+        close.type = 'button';
+        close.dataset.closeNotice = item.id;
+        close.setAttribute('aria-label', `关闭${item.title}通知`);
+        close.textContent = '×';
+
+        head.append(dot, title, time);
+        card.append(head, body, close);
+        strategyPopupStack.appendChild(card);
+      });
+    }
+
+    function setExplainButton(btn, speaking) {
+      btn.classList.toggle('is-speaking', speaking);
+      btn.innerHTML = speaking
+        ? '<span class="sound-bars"><i></i><i></i><i></i><i></i></span>结束讲解'
+        : '<span class="sound-bars"><i></i><i></i><i></i><i></i></span>开始讲解';
+    }
+
+    function showToast(text) {
+      toast.textContent = text;
+      toast.classList.add('show');
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+
+    function openTab(name) {
+      document.querySelectorAll('.board-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tab === name);
+      });
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.classList.toggle('active', tab.id === `tab-${name}`);
+      });
+    }
+
+    document.querySelectorAll('.board-tab').forEach(btn => {
+      btn.addEventListener('click', () => openTab(btn.dataset.tab));
+    });
+
+    document.querySelectorAll('[data-go-tab]').forEach(btn => {
+      btn.addEventListener('click', () => openTab(btn.dataset.goTab));
+    });
+
+    function renderStrategyMetrics(category = 'atmosphere') {
+      const holder = document.getElementById('strategyFields');
+      const metricColors = ['#2F68FF', '#F6AD37', '#38BDF8', '#22C55E', '#A855F7'];
+      holder.innerHTML = strategyMetricMap[category]
+        .map((name, index) => {
+          const dot = `<i class="metric-dot" style="background:${metricColors[index % metricColors.length]}"></i>`;
+          return `<button class="metric-chip ${index < 2 ? 'active' : ''}">${dot}${name}</button>`;
+        })
+        .join('');
+    }
+
+    renderStrategyMetrics();
+    renderStrategyPopupStack();
+
+    document.querySelectorAll('[data-strategy-category]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-strategy-category]').forEach(item => item.classList.remove('active'));
+        btn.classList.add('active');
+        renderStrategyMetrics(btn.dataset.strategyCategory);
+      });
+    });
+
+    document.getElementById('strategyFields').addEventListener('click', event => {
+      const chip = event.target.closest('.metric-chip');
+      if (chip) chip.classList.toggle('active');
+    });
+
+    floatBtn.addEventListener('click', () => {
+      board.classList.add('open');
+      renderStrategyPopupStack();
+    });
+
+    closeBoard.addEventListener('click', () => {
+      board.classList.remove('open');
+      renderStrategyPopupStack();
+    });
+
+    document.addEventListener('click', event => {
+      if (event.target.closest('#assistantFloat')) {
+        board.classList.add('open');
+        renderStrategyPopupStack();
+      }
+      if (event.target.closest('#closeBoard')) {
+        board.classList.remove('open');
+        renderStrategyPopupStack();
+      }
+    });
+
+    strategyPopupStack.addEventListener('click', event => {
+      const close = event.target.closest('[data-close-notice]');
+      if (!close) return;
+      closedStrategyNoticeIds.add(close.dataset.closeNotice);
+      renderStrategyPopupStack();
+    });
+
+    openVoiceParser.addEventListener('click', () => {
+      voiceParserWindow.classList.add('open');
+      showToast('已打开实时语音解析浮窗');
+    });
+
+    toggleVoiceParser.addEventListener('click', () => {
+      const collapsed = voiceParserWindow.classList.toggle('collapsed');
+      toggleVoiceParser.textContent = collapsed ? '+' : '−';
+      toggleVoiceParser.setAttribute('aria-label', collapsed ? '展开实时语音解析' : '收起实时语音解析');
+    });
+
+    closeVoiceParser.addEventListener('click', () => {
+      voiceParserWindow.classList.remove('open');
+    });
+
+    voiceParserHandle.addEventListener('mousedown', event => {
+      if (event.target.closest('button')) return;
+      const rect = voiceParserWindow.getBoundingClientRect();
+      const scale = Number(getComputedStyle(document.documentElement).getPropertyValue('--demo-scale')) || 1;
+      voiceParserDrag = {
+        offsetX: event.clientX - rect.left,
+        offsetY: event.clientY - rect.top,
+        scale
+      };
+      voiceParserWindow.style.right = 'auto';
+      document.body.style.userSelect = 'none';
+    });
+
+    window.addEventListener('mousemove', event => {
+      if (!voiceParserDrag) return;
+      const { offsetX, offsetY, scale } = voiceParserDrag;
+      const nextLeft = Math.max(8, (event.clientX - offsetX) / scale);
+      const nextTop = Math.max(8, (event.clientY - offsetY) / scale);
+      voiceParserWindow.style.left = `${nextLeft}px`;
+      voiceParserWindow.style.top = `${nextTop}px`;
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (!voiceParserDrag) return;
+      voiceParserDrag = null;
+      document.body.style.userSelect = '';
+    });
+
+    document.querySelectorAll('[data-switch]').forEach(sw => {
+      sw.addEventListener('click', () => sw.classList.toggle('on'));
+    });
+
+    linkSwitch.addEventListener('click', () => {
+      linkSwitch.classList.toggle('on');
+      const enabled = linkSwitch.classList.contains('on');
+      startButtons.forEach(btn => btn.classList.toggle('show', enabled));
+      if (!enabled && speakingButton) {
+        setExplainButton(speakingButton, false);
+        speakingButton = null;
+        document.querySelectorAll('.product-row').forEach(item => item.classList.remove('active'));
+      }
+      showToast(enabled ? '已开启商品自动弹讲解' : '已关闭商品自动弹讲解');
+    });
+
+    editIntervalBtn.addEventListener('click', () => {
+      if (intervalInput.disabled) {
+        intervalInput.disabled = false;
+        intervalInput.focus();
+        editIntervalBtn.textContent = '保存';
+      } else {
+        intervalInput.disabled = true;
+        editIntervalBtn.textContent = '修改';
+        showToast(`弹出频率已保存为 ${intervalInput.value || 7} 秒/次`);
+      }
+    });
+
+    function enableSpeechAnalysisFlow() {
+      speechAnalysisEnabled = true;
+      renderVoiceExplainTip();
+      renderVoicePinTip();
+      renderSmartTalkTip();
+      renderRiskMonitorTip();
+      showToast('已开启直播间实时语音解析');
+    }
+
+    function bindSpeechAnalysisLink(id) {
+      document.getElementById(id)?.addEventListener('click', enableSpeechAnalysisFlow);
+    }
+
+    function renderVoiceExplainTip() {
+      const linkEnabled = linkSwitch.classList.contains('on');
+      if (!linkEnabled) {
+        voiceExplainTip.textContent = '此功能须先开启商品自动弹讲解';
+        return;
+      }
+      if (speechAnalysisEnabled) {
+        voiceExplainTip.textContent = '主播话术中出现切换讲解商品的关键信息，系统将自动切换商品弹讲解。例如话术“接下来看一下3号链接”、“我们来讲4号链接的裤子”等';
+      } else {
+        voiceExplainTip.innerHTML = '此功能须先开启直播间实时语音解析 <button class="pink-link" id="enableSpeechAnalysis">去开启&gt;</button>';
+        bindSpeechAnalysisLink('enableSpeechAnalysis');
+      }
+    }
+
+    function renderVoicePinTip() {
+      if (speechAnalysisEnabled) {
+        voicePinTip.textContent = '主播话术中出现置顶商品链接的内容，系统将自动把相应的商品链接置顶到第一个。例如话术“置顶商品链接”、“置顶n号链接”等';
+      } else {
+        voicePinTip.innerHTML = '此功能须先开启直播间实时语音解析，开启后可通过语音置顶商品链接 <button class="pink-link" id="enableSpeechAnalysisForPin">去开启&gt;</button>';
+        bindSpeechAnalysisLink('enableSpeechAnalysisForPin');
+      }
+    }
+
+    function renderSmartTalkTip() {
+      if (speechAnalysisEnabled) {
+        smartTalkTip.textContent = '主播话术触发搭话关键词后，系统自动将场控搭话语音推流到直播间音频中';
+      } else {
+        smartTalkTip.innerHTML = '此功能须先开启直播间实时语音解析 <button class="pink-link" id="enableSpeechAnalysisForTalk">去开启&gt;</button>';
+        bindSpeechAnalysisLink('enableSpeechAnalysisForTalk');
+      }
+    }
+
+    function renderRiskMonitorTip() {
+      if (speechAnalysisEnabled) {
+        riskMonitorTip.textContent = '实时监控主播话术中的高风险表达，及时提醒，预防直播违规';
+      } else {
+        riskMonitorTip.innerHTML = '此功能须先开启直播间实时语音解析 <button class="pink-link" id="enableSpeechAnalysisForRisk">去开启&gt;</button>';
+        bindSpeechAnalysisLink('enableSpeechAnalysisForRisk');
+      }
+    }
+
+    renderVoiceExplainTip();
+    renderVoicePinTip();
+    renderSmartTalkTip();
+    renderRiskMonitorTip();
+
+    voiceExplainSwitch.addEventListener('click', () => {
+      const linkEnabled = linkSwitch.classList.contains('on');
+      if (!linkEnabled) {
+        showToast('请先开启商品自动弹讲解');
+        return;
+      }
+      if (!speechAnalysisEnabled) {
+        showToast('请先开启直播间实时语音解析');
+        return;
+      }
+      voiceExplainSwitch.classList.toggle('on');
+      showToast(voiceExplainSwitch.classList.contains('on') ? '已开启主播语音切讲解' : '已关闭主播语音切讲解');
+    });
+
+    voicePinSwitch.addEventListener('click', () => {
+      if (!speechAnalysisEnabled) {
+        showToast('请先开启直播间实时语音解析');
+        return;
+      }
+      voicePinSwitch.classList.toggle('on');
+      showToast(voicePinSwitch.classList.contains('on') ? '已开启主播语音置顶商品' : '已关闭主播语音置顶商品');
+    });
+
+    smartTalkSwitch.addEventListener('click', () => {
+      if (!speechAnalysisEnabled) {
+        showToast('请先开启直播间实时语音解析');
+        return;
+      }
+      smartTalkSwitch.classList.toggle('on');
+      showToast(smartTalkSwitch.classList.contains('on') ? '已开启智能搭话' : '已关闭智能搭话');
+    });
+
+    riskMonitorSwitch.addEventListener('click', () => {
+      if (!speechAnalysisEnabled) {
+        showToast('请先开启直播间实时语音解析');
+        return;
+      }
+      riskMonitorSwitch.classList.toggle('on');
+      showToast(riskMonitorSwitch.classList.contains('on') ? '已开启违规风险监控' : '已关闭违规风险监控');
+    });
+
+    linkSwitch.addEventListener('click', () => {
+      renderVoiceExplainTip();
+      if (!linkSwitch.classList.contains('on') && voiceExplainSwitch.classList.contains('on')) {
+        voiceExplainSwitch.classList.remove('on');
+      }
+    });
+
+    document.querySelectorAll('.voice-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.voice-pill').forEach(item => item.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    speedSlider.addEventListener('input', () => {
+      speedValue.textContent = `${Number(speedSlider.value).toFixed(1)}x`;
+    });
+
+    document.querySelectorAll('.category-chip').forEach(btn => {
+      btn.addEventListener('click', event => {
+        if (event.target.closest('.switch')) return;
+        document.querySelectorAll('.category-chip').forEach(item => item.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    function openCommentModal() {
+      commentModal.classList.add('open');
+      commentModalMask.classList.add('open');
+    }
+
+    function closeCommentModalFn() {
+      commentModal.classList.remove('open');
+      commentModalMask.classList.remove('open');
+    }
+
+    document.querySelectorAll('[data-open-comment-modal]').forEach(btn => btn.addEventListener('click', openCommentModal));
+    document.getElementById('closeCommentModal').addEventListener('click', closeCommentModalFn);
+    document.getElementById('cancelCommentModal').addEventListener('click', closeCommentModalFn);
+    document.getElementById('confirmCommentModal').addEventListener('click', () => {
+      closeCommentModalFn();
+      showToast('评论组已保存');
+    });
+    commentModalMask.addEventListener('click', closeCommentModalFn);
+
+    startButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const row = btn.closest('.product-row');
+        const title = row.dataset.title;
+
+        if (speakingButton === btn) {
+          setExplainButton(btn, false);
+          speakingButton = null;
+          row.classList.remove('active');
+          showToast('已结束当前商品讲解');
+          return;
+        }
+
+        if (speakingButton) {
+          setExplainButton(speakingButton, false);
+          speakingButton.closest('.product-row')?.classList.remove('active');
+        }
+
+        document.querySelectorAll('.product-row').forEach(item => item.classList.remove('active'));
+        row.classList.add('active');
+        setExplainButton(btn, true);
+        speakingButton = btn;
+        const interval = document.getElementById('intervalInput').value || 7;
+        showToast(`已开始讲解：每 ${interval} 秒循环弹出当前商品链接`);
+      });
+    });
+  </script>
+  <script src="ai-banbo-plugin.js?v=20260721-1"></script>
+</body>
+</html>
