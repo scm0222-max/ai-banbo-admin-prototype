@@ -6,9 +6,9 @@ AI伴播面向服饰、美妆、宠物等内容电商直播团队，用于制作
 
 ## 在线预览
 
-- [AI伴播管理后台](https://yechangmian.github.io/ai-banbo-admin-prototype/)
-- [直播中控台插件](https://yechangmian.github.io/ai-banbo-admin-prototype/live-console/)
-
+- [AI伴播管理后台](https://scm0222-max.github.io/ai-banbo-admin-prototype/)
+- [直播中控台插件](https://scm0222-max.github.io/ai-banbo-admin-prototype/live-console/)
+  
 ## 本地运行
 
 在项目目录启动静态文件服务：
